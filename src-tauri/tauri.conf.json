@@ -59,7 +59,9 @@
         "height": 600,
         "resizable": true,
         "title": "tauri-left-click-menu-issue",
-        "width": 800
+        "width": 800,
+        "focus": false,
+        "visible": false
       }
     ],
     "systemTray": {

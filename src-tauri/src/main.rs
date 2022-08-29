@@ -4,12 +4,17 @@
 )]
 
 use tauri::{
-  AppHandle, CustomMenuItem, Manager, SystemTray, SystemTrayEvent,
-  SystemTrayMenu,
+    CustomMenuItem, Manager, SystemTray, SystemTrayEvent, SystemTrayMenu, SystemTrayMenuItem,
 };
 
 fn main() {
-    let tray_menu = SystemTrayMenu::new(); // insert the menu items here
+    let quit = CustomMenuItem::new("quit".to_string(), "Quit");
+    let hide = CustomMenuItem::new("hide".to_string(), "Hide");
+    let tray_menu = SystemTrayMenu::new()
+        .add_item(quit)
+        .add_native_item(SystemTrayMenuItem::Separator)
+        .add_item(hide);
+
     tauri::Builder::default()
         .system_tray(SystemTray::new().with_menu(tray_menu))
         .on_system_tray_event(|app, event| match event {
@@ -53,6 +58,18 @@ fn main() {
                 _ => {}
             },
             _ => {}
+        })
+        .on_window_event(|_global_event| {
+            let event = _global_event.event();
+            let window = _global_event.window();
+
+            if let tauri::WindowEvent::Focused(focused) = event {
+                if *focused {
+                    return;
+                }
+
+                window.hide().unwrap();
+            }
         })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
